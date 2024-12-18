@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  app:
+    image: microservice-java:latest
+    container_name: microservice-java
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/example-database
+      SPRING_DATASOURCE_USERNAME: example-database
+      SPRING_DATASOURCE_PASSWORD: example-database-password
+      SPRING_SERVER_PORT: 8888
+      SPRING_APP_NAME: MicroService
+    depends_on:
+      - postgres
+    networks:
+      - shared_network
+
+  postgres:
+    image: postgres:latest
+    container_name: spring-database
+    environment:
+      POSTGRES_DB: example-database
+      POSTGRES_USER: example-database
+      POSTGRES_PASSWORD: example-database-password
+    ports:
+      - "5432:5432"
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true
