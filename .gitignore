@@ -1,0 +1,73 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Binary and build artifacts
+*.war
+*.jar
+*.ear
+
+# Maven and Gradle build directories
+/target/
+/build/
+/out/
+
+# IntelliJ IDEA configuration files
+.idea/
+/*.iml
+*.ipr
+*.iws
+.idea/modules.xml
+.idea/*.iml
+.idea/workspace.xml
+
+# Eclipse configuration files
+*.classpath
+*.project
+*.settings/
+
+# NetBeans configuration files
+nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code configuration files
+.vscode/
+
+# Gradle configuration files
+.gradle/
+/gradle/
+/!gradle/wrapper/gradle-wrapper.jar
+.gradle/*
+
+# Maven generated files
+**/target/
+dependency-reduced-pom.xml
+releases/
+build/
+
+# Secrets and configuration files
+.env
+.env.*.local
+*.properties
+*.yaml
+
+# Database files
+*.h2.db
+*.mv.db
+*.sqlite
+*.db
+
+# File system cache
+**/.cache/
+**/.sass-cache/
+**/.env
+
+# Test output
+/test-output/
