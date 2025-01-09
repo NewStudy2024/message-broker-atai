@@ -1,6 +1,6 @@
 package app.v1.messagebroker.controller;
 
-import app.v1.messagebroker.service.GitService;
+import app.v1.messagebroker.service.github.GitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
