@@ -25,7 +25,6 @@ public class CloudFlareService {
     @Value("${api.message.cloudflare}")
     private String systemMessage;
 
-
     public CloudFlareService() {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
@@ -33,13 +32,10 @@ public class CloudFlareService {
 
     public Map<String, Object> sendRequestToCloudflare(String data) {
         try {
-            Map<String, Object> systemContent = Map.of("role", "system", "content", systemMessage);
-            Map<String, Object> userContent = Map.of("role", "user",
-                    "content", "Describe the changes made in the project. Here is the list of updates: " + data);
-
-            // Combine inputs
-            List<Map<String, Object>> messages = List.of(systemContent, userContent);
-            System.out.println(messages);
+            List<Map<String, Object>> messages = List.of(
+                    Map.of("role", "system", "content", systemMessage),
+                    Map.of("role", "user", "content", "Describe the changes made in the project. Here is the list of updates: " + data)
+            );
 
             // Prepare headers
             HttpHeaders headers = new HttpHeaders();

@@ -1,5 +1,6 @@
 package app.v1.messagebroker.service.github;
 
+import app.v1.messagebroker.DTO.GitHubNotificationDto;
 import app.v1.messagebroker.service.cloudflare.CloudFlareService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,13 +59,17 @@ public class GitService {
         return filteredList;
     }
 
-    public Map<String, Object> fetchGitData() {
+    public Map<String, Object> fetchGitData(GitHubNotificationDto notification) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + apiKey);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class, entity);
+        String apiUrlCompare = apiUrl + notification.getRepository() + "/compare/" + notification.getPreviousCommit() + "..." + notification.getCommit();
+
+        System.out.println(apiUrlCompare);
+
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrlCompare, String.class, entity);
         try {
             // Parse response into a Map
             Map<String, Object> jsonResponseGit = objectMapper.readValue(response.getBody(), Map.class);
@@ -75,7 +80,6 @@ public class GitService {
             // Convert filtered files back to JSON
             String filteredJsonString = objectMapper.writeValueAsString(filteredFiles);
 
-            System.out.println("Git Answer (Filtered):");
             System.out.println(filteredJsonString);
 
             // Send filtered JSON string to CloudFlare
