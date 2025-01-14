@@ -1,5 +1,7 @@
 package app.v1.messagebroker.service.cloudflare;
 
+import app.v1.messagebroker.DTO.CloudFlareDto;
+import app.v1.messagebroker.service.github.GitDiscussionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class CloudFlareService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final GitDiscussionService gitDiscussionService;
 
     @Value("${api.url.cloudflare}")
     private String apiBaseUrl;
@@ -28,6 +31,7 @@ public class CloudFlareService {
     public CloudFlareService() {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
+        this.gitDiscussionService = new GitDiscussionService();
     }
 
     public Map<String, Object> sendRequestToCloudflare(String data) {
@@ -50,6 +54,10 @@ public class CloudFlareService {
 
             // Send POST request
             ResponseEntity<String> response = restTemplate.postForEntity(apiBaseUrl, requestEntity, String.class);
+            CloudFlareDto apiResponse = objectMapper.readValue(response.getBody(), CloudFlareDto.class);
+
+
+            gitDiscussionService.createDiscussion("test", "test", "test", apiResponse.getResult().getResponse());
 
             // Parse the response body into a Map
 
