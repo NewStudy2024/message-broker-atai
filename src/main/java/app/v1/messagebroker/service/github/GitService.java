@@ -1,7 +1,9 @@
 package app.v1.messagebroker.service.github;
 
+import app.v1.messagebroker.DTO.GeminiResponseDto;
 import app.v1.messagebroker.DTO.GitHubNotificationDto;
-import app.v1.messagebroker.service.cloudflare.CloudFlareService;
+import app.v1.messagebroker.service.gemini.GeminiService;
+import app.v1.messagebroker.service.github.discussion.GitDiscussionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,21 +16,20 @@ import java.util.Map;
 public class GitService {
     private final GitCommitsService gitCommitsService;
     private final ObjectMapper objectMapper;
-    private final CloudFlareService cloudFlareService;
     private final GitMapperService gitMapperService;
     private final GitDiscussionService gitDiscussionService;
+    private final GeminiService geminiService;
 
     public GitService(GitCommitsService gitCommitsService,
                       GitMapperService gitMapperService,
                       GitDiscussionService gitDiscussionService,
-                      CloudFlareService cloudFlareService) {
+                      GeminiService geminiService) {
         this.objectMapper = new ObjectMapper();
-        this.cloudFlareService = cloudFlareService;
         this.gitCommitsService = gitCommitsService;
         this.gitMapperService = gitMapperService;
         this.gitDiscussionService = gitDiscussionService;
+        this.geminiService = geminiService;
     }
-
 
     public Map<String, Object> fetchGitData(GitHubNotificationDto notification) {
         ResponseEntity<String> response = gitCommitsService.getCommits(notification);
@@ -43,12 +44,11 @@ public class GitService {
             // Convert filtered files back to JSON
             String filteredJsonString = objectMapper.writeValueAsString(filteredFiles);
 
-            System.out.println(filteredJsonString);
+            GeminiResponseDto responseGemini = geminiService.sendRequestGemini(filteredJsonString.replace(" ", ""));
 
-            Map<String, Object> responseCloudFlare = cloudFlareService.sendRequestToCloudflare(filteredJsonString.replace(" ", ""));
+            gitDiscussionService.createDiscussion(notification, responseGemini.getTitle(), responseGemini.getBody());
 
-            // Send filtered JSON string to CloudFlare
-            return responseCloudFlare;
+            return jsonResponseGit;
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JSON response", e);
         }

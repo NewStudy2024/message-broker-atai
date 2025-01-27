@@ -29,14 +29,14 @@ public class GitCommitsService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // Формируем URL для GitHub Compare API
+        // Forming the URL for the GitHub Compare API
         String apiUrlCompare = apiUrl + notification.getRepository() +
                 "/compare/" + notification.getPreviousCommit() +
                 "..." + notification.getCommit();
 
         System.out.println("Git compare URL: " + apiUrlCompare);
 
-        // Делаем запрос к GitHub и возвращаем ResponseEntity<String> как есть
+        // Making a request to GitHub and returning ResponseEntity<String> as is
         return restTemplate.exchange(
                 apiUrlCompare,
                 HttpMethod.GET,

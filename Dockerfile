@@ -24,11 +24,11 @@ WORKDIR /app
 COPY --from=builder /app/target/*.jar /app/app.jar
 
 # Environment variables for the Spring application
-ENV SPRING_SERVER_PORT=8888 \
+ENV SPRING_SERVER_PORT=8081 \
     SPRING_APP_NAME=MicroService
 
 # Expose the application port
-EXPOSE 8888
+EXPOSE 8081
 
 # Entry point for the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

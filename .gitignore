@@ -12,21 +12,18 @@ logs/
 *.ear
 
 # Maven and Gradle build directories
+/target/
 /build/
 /out/
-**/target/
-
-# Include Maven Wrapper
-!.mvn/
-!.mvn/wrapper/*
-!mvnw
-!mvnw.cmd
 
 # IntelliJ IDEA configuration files
 .idea/
 /*.iml
 *.ipr
 *.iws
+.idea/modules.xml
+.idea/*.iml
+.idea/workspace.xml
 
 # Eclipse configuration files
 *.classpath
@@ -49,6 +46,12 @@ nbproject/private/
 /!gradle/wrapper/gradle-wrapper.jar
 .gradle/*
 
+# Maven generated files
+**/target/
+dependency-reduced-pom.xml
+releases/
+build/
+
 # Secrets and configuration files
 .env
 .env.*.local
@@ -64,6 +67,7 @@ nbproject/private/
 # File system cache
 **/.cache/
 **/.sass-cache/
+**/.env
 
 # Test output
 /test-output/

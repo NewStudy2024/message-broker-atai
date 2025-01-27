@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 @Controller
-@RequestMapping("/trigger")
+@RequestMapping("nest24/message-broker/trigger")
 public class TriggerController {
 
     private final GitService gitService;

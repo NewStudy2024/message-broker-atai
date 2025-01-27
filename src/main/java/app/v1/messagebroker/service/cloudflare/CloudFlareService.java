@@ -1,7 +1,7 @@
 package app.v1.messagebroker.service.cloudflare;
 
 import app.v1.messagebroker.DTO.CloudFlareDto;
-import app.v1.messagebroker.service.github.GitDiscussionService;
+import app.v1.messagebroker.service.github.discussion.GitDiscussionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,18 +28,20 @@ public class CloudFlareService {
     @Value("${api.message.cloudflare}")
     private String systemMessage;
 
-    public CloudFlareService() {
+    public CloudFlareService(ObjectMapper objectMapper, GitDiscussionService gitDiscussionService) {
         this.restTemplate = new RestTemplate();
-        this.objectMapper = new ObjectMapper();
-        this.gitDiscussionService = new GitDiscussionService();
+        this.objectMapper = objectMapper;
+        this.gitDiscussionService = gitDiscussionService;
     }
 
-    public Map<String, Object> sendRequestToCloudflare(String data) {
+    public CloudFlareDto sendRequestToCloudflare(String data) {
         try {
             List<Map<String, Object>> messages = List.of(
                     Map.of("role", "system", "content", systemMessage),
                     Map.of("role", "user", "content", "Describe the changes made in the project. Here is the list of updates: " + data)
             );
+
+            System.out.println(data);
 
             // Prepare headers
             HttpHeaders headers = new HttpHeaders();
@@ -56,13 +58,8 @@ public class CloudFlareService {
             ResponseEntity<String> response = restTemplate.postForEntity(apiBaseUrl, requestEntity, String.class);
             CloudFlareDto apiResponse = objectMapper.readValue(response.getBody(), CloudFlareDto.class);
 
-
-            gitDiscussionService.createDiscussion("test", "test", "test", apiResponse.getResult().getResponse());
-
             // Parse the response body into a Map
-
-            System.out.println(response.getBody());
-            return objectMapper.readValue(response.getBody(), Map.class);
+            return apiResponse;
         } catch (Exception e) {
             throw new RuntimeException("Failed to send request to Cloudflare", e);
         }
