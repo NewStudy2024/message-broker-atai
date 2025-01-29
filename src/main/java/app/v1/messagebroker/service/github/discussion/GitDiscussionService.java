@@ -2,12 +2,15 @@ package app.v1.messagebroker.service.github.discussion;
 
 import app.v1.messagebroker.DTO.GitHubNotificationDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Map;
 
 @Service
 public class GitDiscussionService {
@@ -39,8 +42,8 @@ public class GitDiscussionService {
                 body
         );
 
-        // Execute the request *synchronously* by using block()
-        String response = webClient.post()
+        // Execute the request and parse the result as JSON
+        Map<String, Object> responseMap = webClient.post()
                 .uri(githubGraphqlEndpoint)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + githubToken)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -52,13 +55,18 @@ public class GitDiscussionService {
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .map(errorBody -> new RuntimeException("Failed to create discussion: " + errorBody))
                 )
-                .bodyToMono(String.class)
-                .block(); // <-- Blocking here, so no Mono is returned outside
+                // Parse the response directly into a Map
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .block();
 
-        if (response == null || response.isBlank()) {
+        if (responseMap == null || responseMap.isEmpty()) {
             throw new RuntimeException("Failed to create discussion: empty response");
         }
 
-        System.out.println("Discussion created successfully:\n" + response);
+        if (responseMap.containsKey("errors")) {
+            throw new RuntimeException("GraphQL errors: " + responseMap.get("errors"));
+        }
+
+        System.out.println("Discussion created successfully:\n" + responseMap);
     }
 }

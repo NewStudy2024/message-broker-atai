@@ -31,10 +31,11 @@ public class GitService {
         this.geminiService = geminiService;
     }
 
-    public void fetchGitData(GitHubNotificationDto notification) {
-        ResponseEntity<String> response = gitCommitsService.getCommits(notification);
 
+    public String fetchGitData(GitHubNotificationDto notification) {
         try {
+            ResponseEntity<String> response = gitCommitsService.getCommits(notification);
+
             // Parse response into a Map
             Map<String, Object> jsonResponseGit = objectMapper.readValue(response.getBody(), Map.class);
 
@@ -42,16 +43,36 @@ public class GitService {
             List<Map<String, Object>> filteredFiles = gitMapperService.filterFields(jsonResponseGit);
 
             // Convert filtered files back to JSON
-            String filteredJsonString = objectMapper.writeValueAsString(filteredFiles).replace(" ", "");
+            return objectMapper.writeValueAsString(filteredFiles).replace(" ", "");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JSON response", e);
+        }
+    }
 
+    private void createDiscussionWithRetry(String gitCompareResponse, GitHubNotificationDto notification, int attemptsLeft){
+        if (attemptsLeft <= 0) {
+            throw new RuntimeException("Failed to create discussion after multiple attempts");
+        }
+
+        try {
             // Requesting Gemini Ai Service
-            GeminiResponseDto responseGemini = geminiService.sendRequestGemini(filteredJsonString);
+            GeminiResponseDto responseGemini = geminiService.sendRequestGemini(gitCompareResponse);
 
             // Creating Discussions
             gitDiscussionService.createDiscussion(notification, responseGemini.getTitle(), responseGemini.getBody());
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JSON response", e);
+            System.err.println("Attempt failed: " + e.getMessage() + ". Retries left: " + (attemptsLeft - 1));
+            createDiscussionWithRetry(gitCompareResponse, notification, attemptsLeft - 1);
         }
+    }
+
+    private void createDiscussion(String gitCompareResponse, GitHubNotificationDto notification){
+        createDiscussionWithRetry(gitCompareResponse, notification, 2);
+    }
+
+    public void onTrigger(GitHubNotificationDto notification){
+        String gitCompareResponse = fetchGitData(notification);
+        createDiscussion(gitCompareResponse, notification);
     }
 }

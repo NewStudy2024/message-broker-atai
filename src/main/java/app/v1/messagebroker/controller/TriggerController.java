@@ -33,7 +33,7 @@ public class TriggerController {
     public ResponseEntity<Void> triggerGitFetch(
             @Parameter(description = "Payload containing GitHub repository and commit details", required = true)
             @RequestBody GitHubNotificationDto gitHubNotificationDto) {
-        gitService.fetchGitData(gitHubNotificationDto);
+        gitService.onTrigger(gitHubNotificationDto);
         return ResponseEntity.ok().build();
     }
 }
