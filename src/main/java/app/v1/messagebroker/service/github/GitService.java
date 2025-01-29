@@ -4,6 +4,8 @@ import app.v1.messagebroker.DTO.GeminiResponseDto;
 import app.v1.messagebroker.DTO.GitHubNotificationDto;
 import app.v1.messagebroker.service.gemini.GeminiService;
 import app.v1.messagebroker.service.github.discussion.GitDiscussionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,8 +46,12 @@ public class GitService {
 
             // Convert filtered files back to JSON
             return objectMapper.writeValueAsString(filteredFiles).replace(" ", "");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new RuntimeException("Failed to parse JSON response", e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -61,7 +67,7 @@ public class GitService {
             // Creating Discussions
             gitDiscussionService.createDiscussion(notification, responseGemini.getTitle(), responseGemini.getBody());
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.err.println("Attempt failed: " + e.getMessage() + ". Retries left: " + (attemptsLeft - 1));
             createDiscussionWithRetry(gitCompareResponse, notification, attemptsLeft - 1);
         }
