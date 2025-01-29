@@ -7,12 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.Map;
 
 
 @Controller
-@RequestMapping("nest24/message-broker/trigger")
+@RequestMapping("/api/trigger")
+@Tag(name = "Broker trigger", description = "Trigger endpoint")
 public class TriggerController {
 
     private final GitService gitService;
@@ -21,10 +25,15 @@ public class TriggerController {
         this.gitService = gitService;
     }
 
-
+    @Operation(
+            summary = "Trigger Git data fetch",
+            description = "Fetches Git data based on the provided GitHubNotificationDto."
+    )
     @PostMapping("/fetch")
-    public ResponseEntity<Map<String, Object>> triggerGitFetch(@RequestBody GitHubNotificationDto gitHubNotificationDto) {
-        Map<String, Object> result = gitService.fetchGitData(gitHubNotificationDto);
-        return ResponseEntity.status(200).body(result);
+    public ResponseEntity<Void> triggerGitFetch(
+            @Parameter(description = "Payload containing GitHub repository and commit details", required = true)
+            @RequestBody GitHubNotificationDto gitHubNotificationDto) {
+        gitService.fetchGitData(gitHubNotificationDto);
+        return ResponseEntity.ok().build();
     }
 }

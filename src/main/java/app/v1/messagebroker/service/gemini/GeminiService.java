@@ -26,6 +26,8 @@ public class GeminiService {
     }
 
     public GeminiResponseDto sendRequestGemini(String data) {
+        System.out.println(" -- Gemini Ai Service -- ");
+
         Map<String, Object> requestBody = Map.of("data", data);
 
         try {

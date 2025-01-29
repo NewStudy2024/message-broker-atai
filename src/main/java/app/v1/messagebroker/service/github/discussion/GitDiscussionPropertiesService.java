@@ -26,6 +26,7 @@ public class GitDiscussionPropertiesService {
 
 
     public String getRepositoryId(GitHubNotificationDto notification) {
+        System.out.println(" -- Git discussions get Repository Id -- ");
         String repositoryIdQuery = String.format(
                 "{ \"query\": \"query { repository(owner: \\\"%s\\\", name: \\\"%s\\\") { id } }\" }",
                 notification.getPusher(), notification.getNameRepo());
@@ -62,15 +63,10 @@ public class GitDiscussionPropertiesService {
 
 
     public String getGeneralCategory(GitHubNotificationDto notification) {
+        System.out.println(" -- Git discussions get General Category -- ");
         String discussionCategoriesQuery = String.format(
                 "{ \"query\": \"query { repository(owner: \\\"%s\\\", name: \\\"%s\\\") { discussionCategories(first: 10) { edges { node { id name } } } } }\" }",
                 notification.getPusher(), notification.getNameRepo());
-
-
-
-        System.out.println(discussionCategoriesQuery);
-        System.out.println(notification.getNameRepo());
-        System.out.println(notification.getPusher());
 
         try {
             String response = webClient.post()
@@ -100,6 +96,7 @@ public class GitDiscussionPropertiesService {
 
         } catch (Exception e) {
             //If error means discussions not activated
+            System.err.println("Are discussions activated?");
             System.err.println("Error during request to fetch discussion categories");
             e.printStackTrace();
             throw new RuntimeException("Request Error", e);

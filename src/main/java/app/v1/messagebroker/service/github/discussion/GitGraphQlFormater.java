@@ -21,6 +21,7 @@ public class GitGraphQlFormater {
     }
 
     public static String formatCreateDiscussionMutation(String repositoryId, String categoryId, String title, String body) {
+        System.out.println(" -- Git discussions preparing query -- ");
         String escapedBody = escapeString(body);
         String escapedTitle = escapeString(title);
 

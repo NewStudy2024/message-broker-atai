@@ -11,6 +11,8 @@ import java.util.Map;
 public class GitMapperService {
 
     public static List<Map<String, Object>> filterFields(Map<String, Object> data) {
+        System.out.println(" -- Filtering fields  -- ");
+
         List<Map<String, Object>> filteredList = new ArrayList<>();
         List<String> fieldsToKeep = List.of("filename", "changes", "patch");
 

@@ -31,7 +31,7 @@ public class GitService {
         this.geminiService = geminiService;
     }
 
-    public Map<String, Object> fetchGitData(GitHubNotificationDto notification) {
+    public void fetchGitData(GitHubNotificationDto notification) {
         ResponseEntity<String> response = gitCommitsService.getCommits(notification);
 
         try {
@@ -42,13 +42,14 @@ public class GitService {
             List<Map<String, Object>> filteredFiles = gitMapperService.filterFields(jsonResponseGit);
 
             // Convert filtered files back to JSON
-            String filteredJsonString = objectMapper.writeValueAsString(filteredFiles);
+            String filteredJsonString = objectMapper.writeValueAsString(filteredFiles).replace(" ", "");
 
-            GeminiResponseDto responseGemini = geminiService.sendRequestGemini(filteredJsonString.replace(" ", ""));
+            // Requesting Gemini Ai Service
+            GeminiResponseDto responseGemini = geminiService.sendRequestGemini(filteredJsonString);
 
+            // Creating Discussions
             gitDiscussionService.createDiscussion(notification, responseGemini.getTitle(), responseGemini.getBody());
 
-            return jsonResponseGit;
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JSON response", e);
         }
