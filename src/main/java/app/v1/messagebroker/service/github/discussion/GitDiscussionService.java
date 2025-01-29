@@ -59,10 +59,13 @@ public class GitDiscussionService {
                 .block();
 
         if (responseMap == null || responseMap.isEmpty()) {
+            System.out.println("Failed to create discussion: " + notification);
             throw new RuntimeException("Failed to create discussion: empty response");
         }
 
         if (responseMap.containsKey("errors")) {
+            System.err.println("Failed to create discussion: " + responseMap.get("errors"));
+            // Throw a RuntimeException with the GraphQL errors
             throw new RuntimeException("GraphQL errors: " + responseMap.get("errors"));
         }
 

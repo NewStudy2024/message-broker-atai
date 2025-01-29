@@ -55,19 +55,20 @@ public class GitService {
         }
     }
 
-    private void createDiscussionWithRetry(String gitCompareResponse, GitHubNotificationDto notification, int attemptsLeft){
+    private void createDiscussionWithRetry(String gitCompareResponse, GitHubNotificationDto notification, int attemptsLeft) {
         if (attemptsLeft <= 0) {
             throw new RuntimeException("Failed to create discussion after multiple attempts");
         }
 
         try {
-            // Requesting Gemini Ai Service
+            // Requesting Gemini AI Service
             GeminiResponseDto responseGemini = geminiService.sendRequestGemini(gitCompareResponse);
 
             // Creating Discussions
             gitDiscussionService.createDiscussion(notification, responseGemini.getTitle(), responseGemini.getBody());
 
         } catch (RuntimeException e) {
+            // Log the error and retry
             System.err.println("Attempt failed: " + e.getMessage() + ". Retries left: " + (attemptsLeft - 1));
             createDiscussionWithRetry(gitCompareResponse, notification, attemptsLeft - 1);
         }
