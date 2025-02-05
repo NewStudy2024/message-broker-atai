@@ -75,7 +75,7 @@ public class GitService {
     }
 
     private void createDiscussion(String gitCompareResponse, GitHubNotificationDto notification){
-        createDiscussionWithRetry(gitCompareResponse, notification, 4);
+        createDiscussionWithRetry(gitCompareResponse, notification, 7);
     }
 
     public void onTrigger(GitHubNotificationDto notification){
