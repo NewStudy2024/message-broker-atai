@@ -1,4 +1,4 @@
-# GitHub Comment Bot
+# GitHub Discussion AI Bot
 
 ## Overview
 The GitHub Discussion Bot is an automated service that generates eloquent, context-aware discussions based on your GitHub commits and push events. By leveraging the GitHub API to gather repository data and Gemini AI to create insightful comments, this bot can save you time and enhance your development workflow.
