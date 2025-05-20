@@ -29,6 +29,23 @@ public class TriggerController {
             description = "Fetches Git data based on the provided GitHubNotificationDto."
     )
 
+    @PostMapping("/test-event")
+    public ResponseEntity<String> triggerTestEvent() {
+        // Можно эмулировать GitHubNotificationDto с фиктивными данными
+        GitHubNotificationDto mockDto = new GitHubNotificationDto();
+        mockDto.setRepository("example/repo");
+        mockDto.setCommitId("123abc");
+        mockDto.setPusher("TestUser");
+
+        try {
+            gitService.onTrigger(mockDto);
+            return ResponseEntity.ok("Test event processed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Test event failed: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/fetch")
     @CrossOrigin(origins = "*")
     public ResponseEntity<String> triggerGitFetch(
