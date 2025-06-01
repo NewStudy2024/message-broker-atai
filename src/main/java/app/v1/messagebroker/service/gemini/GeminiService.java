@@ -50,4 +50,32 @@ public class GeminiService {
             throw new RuntimeException("Request Error", e);
         }
     }
+
+    /**
+     * Mock method just for fun — returns a static Gemini response.
+     */
+    public GeminiResponseDto mockResponse() {
+        GeminiResponseDto mock = new GeminiResponseDto();
+        mock.setMessage("🪐 Gemini says hello!");
+        mock.setStatus("MOCK_OK");
+        return mock;
+    }
+
+    /**
+     * Health check — sends a simple ping to the Gemini API to check availability.
+     */
+    public boolean pingGemini() {
+        try {
+            String response = webClient.get()
+                    .uri(apiBaseUrl + "/ping") // если такое есть
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            return response != null && response.contains("pong");
+        } catch (Exception e) {
+            System.err.println("Gemini ping failed: " + e.getMessage());
+            return false;
+        }
+    }
 }
