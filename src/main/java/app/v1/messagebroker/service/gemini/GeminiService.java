@@ -78,4 +78,24 @@ public class GeminiService {
             return false;
         }
     }
+
+    /**
+     * Echo method — returns what it receives, useful for testing input.
+     */
+    public GeminiResponseDto echoInput(String input) {
+        GeminiResponseDto echo = new GeminiResponseDto();
+        echo.setMessage("Echo: " + input);
+        echo.setStatus("ECHO_OK");
+        return echo;
+    }
+
+    /**
+     * Returns diagnostic info about the GeminiService.
+     */
+    public GeminiResponseDto getGeminiInfo() {
+        GeminiResponseDto info = new GeminiResponseDto();
+        info.setMessage("Gemini Service is configured for: " + apiBaseUrl);
+        info.setStatus("INFO");
+        return info;
+    }
 }
